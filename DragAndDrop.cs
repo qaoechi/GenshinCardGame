@@ -14,6 +14,18 @@ public class DragAndDrop : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
 
     [HideInInspector] public Transform startParent;
 
+    [SerializeField] private Transform cementryCanvas;
+
+    /*void Start()
+    {
+        Invoke("GetCemCan", 1);
+        cementryCanvas = GetCemCan();
+    }
+    private Transform GetCemCan()
+    {
+        return transform.Find("cementryCanvas").transform;
+    }*/
+
     public void OnBeginDrag(PointerEventData eventData)
     {
         draggedIcon = gameObject;
@@ -24,6 +36,7 @@ public class DragAndDrop : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
         GetComponent<CanvasGroup>().blocksRaycasts = false;
 
         transform.SetParent(onDragParent);
+        transform.SetAsLastSibling();
     }
 
     public void OnDrag(PointerEventData eventData)
@@ -40,26 +53,15 @@ public class DragAndDrop : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndD
         draggedIcon = null;
         GetComponent<CanvasGroup>().blocksRaycasts = true;
 
-        if(transform.parent == onDragParent)
+        if (transform.parent == onDragParent)
         {
             transform.position = startPosition;
             transform.SetParent(startParent);
         }
-    }
-    //public RectTransform rectTransform;
-    // Start is called before the first frame update
-    void Start()
-    {
-        //rectTransform = FindObjectOfType(typeof(RectTransform)) as RectTransform;
-        //rectTransform = this.GetComponent<RectTransform>();
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        /*if (Input.GetMouseButtonDown(0))
+        if (transform.parent.name == "cementry")
         {
-            rectTransform.anchoredPosition = Input.mousePosition;
-        }*/
+            transform.SetParent(cementryCanvas);
+        }
+        transform.SetAsFirstSibling();
     }
 }

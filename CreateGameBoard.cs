@@ -9,6 +9,8 @@ using TMPro;
 using UnityEngine.UI;
 using static System.Net.Mime.MediaTypeNames;
 using UnityEditor.SceneManagement;
+using OriginalCard.Script;
+using Unity.VisualScripting;
 
 public class CreateGameBoard : MonoBehaviour
 {
@@ -30,9 +32,15 @@ public class CreateGameBoard : MonoBehaviour
     //16.5 °¡·Î ºó°ø°£
 
     private Transform baseCanvasTransform;
+    private Transform moreCanvasTransform;
+    private Transform cementryCanvasTransform;
+
+    private bool isShowMore = false;
+    private bool isShowCementry = false;
 
     private ButtonClick buttonClickScript;
     private DragAndDrop dragAndDropScript;
+    //private CardCreate cardCreateScript;
     //private Slot slotScript;
 
 
@@ -43,6 +51,8 @@ public class CreateGameBoard : MonoBehaviour
         buttonClickScript = btnClick.AddComponent<ButtonClick>();
         GameObject Dadrop = new GameObject("dragAndDrop");
         dragAndDropScript = Dadrop.AddComponent<DragAndDrop>();
+        /*GameObject uiCardCreate = new GameObject("cardCreate");
+        cardCreateScript = uiCardCreate.AddComponent<CardCreate>();*/
         /*GameObject slotCard = new GameObject("slot");
         slotScript = slotCard.AddComponent<Slot>();*/
 
@@ -65,23 +75,16 @@ public class CreateGameBoard : MonoBehaviour
         var ui = new CanvasMain(canvasPrefab, emptyX, emptyY);
         GameObject mainCanvas = ui.CreateUI(canvasRectTransform);
 
-        SetupCardSlot(mainCanvas);
-        
+        moreCanvasTransform = SetupMoreDrawedCanvas(mainCanvas);
+        cementryCanvasTransform = SetupCementryCanvas(mainCanvas);
+        SetupCardSlot(mainCanvas, moreCanvasTransform);
     }
 
-    private void SetupCardSlot(GameObject mainCanvas)
+    private void SetupCardSlot(GameObject mainCanvas, Transform moreCanvasTransform)
     {
         var onFieldCardSlot = new CardSlot(card, sprites[10], cardWidth, cardHeight, cardScale, 0, cardHeight + emptyY);
         GameObject on = onFieldCardSlot.CreateUI(mainCanvas.GetComponent<RectTransform>());
         on.name = "onField";
-
-        var imsiCard = new CardSlot(card, sprites[3], cardWidth, cardHeight, cardScale, 0, cardHeight + emptyY);
-        GameObject imsi = imsiCard.CreateUI(on.GetComponent<RectTransform>());
-        imsi.name = "imsi";
-        DragAndDrop dADrop = imsi.AddComponent<DragAndDrop>();
-        imsi.AddComponent<CanvasGroup>();
-        Destroy(imsi.GetComponent<Slot>());
-        dADrop.onDragParent = mainCanvas.transform;
         SetAtkButton(on);
 
         for (int i = 0; i < 3; i++)
@@ -111,13 +114,30 @@ public class CreateGameBoard : MonoBehaviour
             var drawedFieldCardSlot = new CardSlot(card, sprites[10], cardWidth / 2f, cardHeight / 2f, cardScale, (2 * cardWidth + 2 * emptyX) + i * (cardWidth / 2f + emptyX / 2f), -1.5f * (emptyY + cardHeight));
             GameObject drawed = drawedFieldCardSlot.CreateUI(mainCanvas.GetComponent<RectTransform>());
             drawed.name = "drawed" + i;
+            var drawedBtn = drawed.AddComponent<Button>();
+            drawedBtn.onClick.AddListener(() =>
+            {
+                if (!isShowMore)
+                {
+                    RectTransformSetter.SetRectTransform(moreCanvasTransform.GetComponent<RectTransform>(), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(3 * cardWidth + 2 * emptyX, 400), new Vector3(400, 0, 0), Vector3.one);
+                    isShowMore = true;
+                }
+                else
+                {
+                    RectTransformSetter.SetRectTransform(moreCanvasTransform.GetComponent<RectTransform>(), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(3 * cardWidth + 2 * emptyX, 400), new Vector3(1000, 1000, 0), Vector3.one);
+                    isShowMore = false;
+                }
+            });
         }
 
         var deckCardSlot = new CardSlot(card, sprites[10], cardWidth, cardHeight, cardScale, 4 * (cardWidth + emptyX), -cardWidth * 1.5f - emptyY);
         GameObject deck = deckCardSlot.CreateUI(mainCanvas.GetComponent<RectTransform>());
         deck.GetComponent<RectTransform>().rotation = Quaternion.Euler(0, 0, 90);
         deck.name = "deck";
-
+        var deckBtn = deck.AddComponent<Button>();
+        //CardCreate cardCreate = deck.AddComponent<CardCreate>();
+        CardCreate cardCreate = new CardCreate(card, sprites[3], cardWidth, cardHeight, cardScale, 0, 0, mainCanvas.transform);
+        deckBtn.onClick.AddListener(() => cardCreate.ItsMyTurnDraw(moreCanvasTransform));
 
         var burstCardSlot = new CardSlot(card, sprites[10], cardWidth, cardHeight, cardScale, -3 * (cardWidth + emptyX), -cardHeight - 2 * emptyY);
         GameObject burst = burstCardSlot.CreateUI(mainCanvas.GetComponent<RectTransform>());
@@ -126,8 +146,22 @@ public class CreateGameBoard : MonoBehaviour
         var cementryCardSlot = new CardSlot(card, sprites[10], cardWidth, cardWidth, cardScale, 4 * (cardWidth + emptyX),  emptyY - cardHeight / 2f);
         GameObject cementry = cementryCardSlot.CreateUI(mainCanvas.GetComponent<RectTransform>());
         cementry.name = "cementry";
+        var cementryBtn = cementry.AddComponent<Button>();
+        cementryBtn.onClick.AddListener(() =>
+        {
+            if (!isShowCementry)
+            {
+                RectTransformSetter.SetRectTransform(cementryCanvasTransform.GetComponent<RectTransform>(), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(3 * cardWidth + 2 * emptyX, 400), new Vector3(400, 0, 0), Vector3.one);
+                isShowCementry = true;
+            }
+            else
+            {
+                RectTransformSetter.SetRectTransform(cementryCanvasTransform.GetComponent<RectTransform>(), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(3 * cardWidth + 2 * emptyX, 400), new Vector3(1000, 1000, 0), Vector3.one);
+                isShowCementry = false;
+            }
+        });
 
-        for(int i = 0; i < 4; i++)
+        for (int i = 0; i < 4; i++)
         {
             CardSlot creatureFieldCardSlot;
             GameObject creature;
@@ -200,6 +234,34 @@ public class CreateGameBoard : MonoBehaviour
             }
         }
     }
+
+    private Transform SetupMoreDrawedCanvas(GameObject mainCanvas)
+    {
+        var moreCanvas = new CanvasMoreDrawed(canvasPrefab, 400, 0, 3 * cardWidth + 2 * emptyX, 400);
+        GameObject moreDrawed = moreCanvas.CreateUI(mainCanvas.transform);
+        var grid = moreDrawed.AddComponent<GridLayoutGroup>();
+        grid.cellSize = new Vector2(cardWidth, cardHeight);
+        grid.spacing = new Vector2(emptyX, emptyY);
+        grid.startCorner = GridLayoutGroup.Corner.UpperLeft;
+        grid.childAlignment = TextAnchor.MiddleCenter;
+        return moreDrawed.transform;
+    }
+
+    private Transform SetupCementryCanvas(GameObject mainCanvas)
+    {
+        var cementryCanvas = new CanvasMoreDrawed(canvasPrefab, 400, 0, 3 * cardWidth + 2 * emptyX, 400);
+        GameObject cementry = cementryCanvas.CreateUI(mainCanvas.transform);
+        cementry.name = "cementryCanvas";
+        var horizontalLayout = cementry.AddComponent<HorizontalLayoutGroup>();
+        horizontalLayout.spacing = emptyX;
+        horizontalLayout.childAlignment = TextAnchor.MiddleLeft;
+        horizontalLayout.childScaleHeight = true;
+        horizontalLayout.childScaleWidth = true;
+        horizontalLayout.childControlHeight = false;
+        horizontalLayout.childControlWidth = false;
+        return cementry.transform;
+    }
+
 
     private void SetAtkButton(GameObject card)
     {

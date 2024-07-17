@@ -33,10 +33,8 @@ namespace Assets.Script
             slot.GetComponent<Image>().sprite = sprite;
             SetRectTransform(slot.GetComponent<RectTransform>());
 
-
             slot.transform.SetParent(parent);
             slot.AddComponent<Slot>();
-            //Slot slotScript = slot.AddComponent<Slot>();
             return slot;
         }
 
@@ -50,7 +48,6 @@ namespace Assets.Script
                new Vector3(cardWidth, cardHeight),
                new Vector3(x, y, 0),
                new Vector3(cardScale, cardScale, 1)
-
            );
         }
 

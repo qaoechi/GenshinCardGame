@@ -10,14 +10,23 @@ public class Slot : MonoBehaviour, IDropHandler
 
     GameObject Icon()
     {
-        if(transform.childCount > 0)
+        if (transform.Find("card"))
+        {
+            return transform.Find("card").gameObject;
+        }
+        else
+        {
+            return null;
+        }
+
+        /*if(transform.childCount > 0)
         {
             return transform.GetChild(0).gameObject;
         }
         else
         {
             return null;
-        }
+        }*/
     }
 
     public void OnDrop(PointerEventData eventData)

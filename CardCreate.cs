@@ -10,17 +10,21 @@ namespace OriginalCard.Script
     {
         public GameObject card;
         private Sprite sprite;
-        private Vector2 size;
-        private Vector3 position, scale;
+        private float cardWidth;
+        private float cardHeight;
+        private float cardScale;
+        private float x, y;
         private Transform OnDragParent;
 
-        public CardCreate(GameObject card, Sprite sprite, Vector2 size, Vector3 position, Vector3 scale, Transform onDragParent)
+        public CardCreate(GameObject card, Sprite sprite, float cardWidth, float cardHeight, float cardScale, float x, float y, Transform onDragParent)
         {
             this.card = card;
             this.sprite = sprite;
-            this.size = size;
-            this.position = position;
-            this.scale = scale;
+            this.cardWidth = cardWidth;
+            this.cardHeight = cardHeight;
+            this.cardScale = cardScale;
+            this.x = x;
+            this.y = y;
             this.OnDragParent = onDragParent;
         }
 
@@ -29,36 +33,30 @@ namespace OriginalCard.Script
             GameObject image = UnityEngine.Object.Instantiate(card, parent);
             image.GetComponent<Image>().sprite = sprite;
             SetRectTransform(image.GetComponent<RectTransform>());
-
-            /*GameObject a = new GameObject("imsi");
-            DragAndDrop dragHandler = a.AddComponent<DragAndDrop>();*/
-            /*DragAndDrop a = image.GetComponent<DragAndDrop>();
-            a.onDragParent = OnDragParent;*/
-            
             return image;
         }
-
+            
         public void SetRectTransform(RectTransform rectTransform)
         {
-            /*rectTransform.sizeDelta = size;
-            rectTransform.localPosition = position;
-            rectTransform.localScale = scale;*/
             RectTransformSetter.SetRectTransform(
-                rectTransform,
-                new Vector2(0.5f, 1),
-                new Vector2(0.5f, 1),
-                new Vector2(0.5f, 0.5f),
-                new Vector3(15, 15 * 2048f / 1329f, 1),
-                new Vector3(0, -346.7269f / 2f, 0),
-                new Vector3(15, 15, 1)
+               rectTransform,
+               new Vector2(0.5f, 0.5f),
+               new Vector2(0.5f, 0.5f),
+               new Vector2(0.5f, 0.5f),
+               new Vector3(cardWidth, cardHeight),
+               new Vector3(x, y, 0),
+               new Vector3(cardScale, cardScale, 1)
+           );
+        }
 
-            );
-            /*new Vector2(0.5f, 1);
-            new Vector2(0.5f, 1);
-            new Vector2(0.5f, 0.5f);
-            new Vector3(card_size, card_size * card_ratio, 1);
-            new Vector3(0, -card_height / 2f, 0);
-            new Vector3(card_size, card_size, 1);*/
+        public void ItsMyTurnDraw(Transform transform)
+        {
+            var cardDraw = new CardCreate(card, sprite, cardWidth, cardHeight, cardScale, 0, 0, OnDragParent);
+            GameObject newCard = cardDraw.CreateUI(transform);
+            newCard.name = "card";
+            DragAndDrop dADrop = newCard.AddComponent<DragAndDrop>();
+            newCard.AddComponent<CanvasGroup>();
+            dADrop.onDragParent = OnDragParent;
         }
     }
 }
