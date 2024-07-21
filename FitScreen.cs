@@ -6,7 +6,6 @@ using UnityEngine;
 
 public class ScreenTest : MonoBehaviour
 {
-
     private void Awake()
     {
         Camera camera = GetComponent<Camera>();

@@ -18,7 +18,7 @@ public class GenerateList : MonoBehaviour
 
     public GameObject canvasPrefab;  //이 빈 프리팹을 반복문으로 생성
     public GameObject imagePrefab;  // 이 빈 프리팹을 반복문으로 생성하고 이미지를 넣음
-    public List<Sprite> sprites;    // 스프라이트 리스트(내가 손수 넣은거)
+    public List<Sprite> sprites;    // 스프라이트 리스트(내가 Inspector창에 손수 넣을거)
     private Dictionary<SpriteType, Sprite> spriteDictionary;    //스프라이트 딕셔너리
 
 

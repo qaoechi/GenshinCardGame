@@ -2,7 +2,6 @@ using IUIElement.Script;
 using UnityEngine;
 
 //캔버스 생성 기본 클래스
-
 public abstract class CanvasCreate : ICreateUI
 {
     protected GameObject canvasPrefab;
@@ -22,7 +21,6 @@ public abstract class CanvasCreate : ICreateUI
         SetRectTransform(canvas.GetComponent<RectTransform>());
         return canvas;
    }
-   
     protected abstract string GetCanvasName();
     public abstract void SetRectTransform(RectTransform rectTransform);
 }
